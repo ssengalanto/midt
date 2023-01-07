@@ -1,0 +1,66 @@
+version: "3"
+
+vars:
+  PACKAGES:
+    sh: go list ./...
+
+tasks:
+  default:
+    desc: List all the available tasks.
+    cmds:
+      - task --list
+    silent: true
+
+  init:mac:
+    desc: Install required dependencies for MacOS via `Homebrew`.
+    cmds:
+      - brew install go-task/tap/go-task
+
+  init:win:
+    desc: Install required dependencies for Windows via `Chocolatey`.
+    cmds:
+      - choco install go-task
+
+  fmt:
+    desc: Run "go fmt" on all Go packages.
+    cmds:
+      - echo 'Formatting codes...'
+      - go fmt {{catLines .PACKAGES}}
+    silent: true
+
+  tidy:
+    desc: Run "go mod tidy" and "go mod verify".
+    cmds:
+      - echo 'Tidying and verifying module dependencies...'
+      - go mod tidy
+      - go mod verify
+    silent: true
+
+  vet:
+    desc: Run "go vet" on all Go packages.
+    cmds:
+      - echo 'Vetting codes...'
+      - go vet {{catLines .PACKAGES}}
+    silent: true
+
+  test:
+    desc: Run all tests.
+    cmds:
+      - echo 'Testing codes...'
+      - go test -coverprofile=coverage.out {{catLines .PACKAGES}}
+    silent: true
+
+  test:coverage:
+    desc: Run unit tests and show test coverage information.
+    cmds:
+      - go tool cover -html=coverage.out
+
+  audit:
+    desc: Audits Go codes.
+    deps:
+      - fmt
+      - tidy
+      - vet
+    cmds:
+      - go test -race -vet=off {{catLines .PACKAGES}}
+    silent: true
