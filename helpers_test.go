@@ -42,7 +42,7 @@ type NotificationRequest struct {
 type NotificationHandler struct{}
 
 func (n *NotificationHandler) Name() string {
-	return fmt.Sprintf("%T", &CommandRequest{})
+	return fmt.Sprintf("%T", &NotificationRequest{})
 }
 
 func (n *NotificationHandler) Handle(ctx context.Context, notification any) error {

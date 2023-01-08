@@ -115,3 +115,24 @@ func TestMediatr_Send(t *testing.T) {
 			require.Error(t, err)
 		})
 }
+
+func TestMediatr_Publish(t *testing.T) {
+	t.Run("it should execute the notification handler",
+		func(t *testing.T) {
+			m := mediatr.New()
+
+			hdlr := &NotificationHandler{}
+			err := m.RegisterNotificationHandler(hdlr)
+			require.NoError(t, err)
+
+			err = m.Publish(context.Background(), &NotificationRequest{})
+			require.NoError(t, err)
+		})
+	t.Run("it should return an error if there are no registered notification handlers in the registry",
+		func(t *testing.T) {
+			m := mediatr.New()
+
+			err := m.Publish(context.Background(), &NotificationRequest{})
+			require.Error(t, err)
+		})
+}

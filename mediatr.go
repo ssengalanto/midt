@@ -126,6 +126,23 @@ func (m *Mediatr) Send(ctx context.Context, request any) (any, error) {
 	return response, nil
 }
 
+// Publish publishes the notification event to its corresponding NotificationHandler.
+func (m *Mediatr) Publish(ctx context.Context, request any) error {
+	rt := reflect.TypeOf(request).String()
+
+	handler, ok := m.notificationHandlerRegistry[rt]
+	if !ok {
+		return fmt.Errorf("%w: %s", ErrRequestHandlerNotFound, rt)
+	}
+
+	err := handler.Handle(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // existsPipeType checks if a pipeline behaviour exists in the registry.
 func (m *Mediatr) existsPipeType(p reflect.Type) bool {
 	for _, pipe := range m.pipelineBehaviourRegistry {
