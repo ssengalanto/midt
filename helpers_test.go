@@ -1,0 +1,59 @@
+package mediatr_test
+
+import (
+	"context"
+	"errors"
+	"fmt"
+)
+
+type CommandRequest struct {
+	Data string
+}
+
+type CommandResponse struct {
+	Data string
+}
+
+type CommandHandler struct{}
+
+func (c *CommandHandler) Name() string {
+	return fmt.Sprintf("%T", &CommandRequest{})
+}
+
+func (c *CommandHandler) Handle(ctx context.Context, request any) (any, error) {
+	empty := CommandResponse{}
+
+	req, ok := request.(*CommandRequest)
+	if !ok {
+		return empty, errors.New("invalid request")
+	}
+
+	fmt.Printf("%s executed", c.Name())
+	return CommandResponse{Data: req.Data}, nil
+}
+
+type QueryRequest struct {
+	Data string
+}
+
+type QueryResponse struct {
+	Data string
+}
+
+type QueryHandler struct{}
+
+func (q *QueryHandler) Name() string {
+	return fmt.Sprintf("%T", &QueryRequest{})
+}
+
+func (q *QueryHandler) Handle(ctx context.Context, request any) (any, error) {
+	empty := QueryResponse{}
+
+	req, ok := request.(*QueryRequest)
+	if !ok {
+		return empty, errors.New("invalid request")
+	}
+
+	fmt.Printf("%s executed", q.Name())
+	return QueryResponse{Data: req.Data}, nil
+}

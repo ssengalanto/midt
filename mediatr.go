@@ -4,9 +4,36 @@
 // of a program by making them communicate indirectly, through a special mediator object.
 package mediatr
 
-type Mediatr struct{}
+import (
+	"context"
+	"fmt"
+)
+
+type Mediatr struct {
+	requestHandlerRegistry map[string]RequestHandler
+}
+
+type RequestHandler interface {
+	Name() string
+	Handle(ctx context.Context, request any) (any, error)
+}
 
 // New creates a new Mediatr instance.
 func New() *Mediatr {
-	return &Mediatr{}
+	return &Mediatr{
+		requestHandlerRegistry: map[string]RequestHandler{},
+	}
+}
+
+// RegisterRequestHandler register a request handler in the registry.
+func (m *Mediatr) RegisterRequestHandler(handler RequestHandler) error {
+	hn := handler.Name()
+
+	_, ok := m.requestHandlerRegistry[hn]
+	if ok {
+		return fmt.Errorf("%w: %s", ErrRequestHandlerAlreadyExists, hn)
+	}
+
+	m.requestHandlerRegistry[hn] = handler
+	return nil
 }
