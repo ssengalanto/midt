@@ -1,2 +1,2 @@
-# mediatR
-Simple, unambitious mediator implementation in Go.
+# mediatR ![workflow](https://github.com/ssengalanto/mediatR/actions/workflows/ci.yml/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/ssengalanto/mediatR)](https://goreportcard.com/report/github.com/ssengalanto/mediatR) [![Coverage Status](https://coveralls.io/repos/github/ssengalanto/mediatR/badge.svg?branch=main)](https://coveralls.io/github/ssengalanto/mediatR?branch=main) [![Go Reference](https://pkg.go.dev/badge/github.com/ssengalanto/mediatR.svg)](https://pkg.go.dev/github.com/ssengalanto/mediatR) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Gopher Wiz](./assets/ssengalanto-gopher-wiz.png)
