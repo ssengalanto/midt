@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	mediatr "github.com/ssengalanto/mediatR"
 	"log"
+
+	mediatr "github.com/ssengalanto/mediatR"
 )
 
 type CommandRequest struct {
@@ -32,32 +33,6 @@ func (c *CommandHandler) Handle(ctx context.Context, request any) (any, error) {
 
 	fmt.Printf("%s executed", c.Name())
 	return CommandResponse{Data: req.Data}, nil
-}
-
-type QueryRequest struct {
-	Data string
-}
-
-type QueryResponse struct {
-	Data string
-}
-
-type QueryHandler struct{}
-
-func (q *QueryHandler) Name() string {
-	return fmt.Sprintf("%T", &QueryRequest{})
-}
-
-func (q *QueryHandler) Handle(ctx context.Context, request any) (any, error) {
-	empty := QueryResponse{}
-
-	req, ok := request.(*QueryRequest)
-	if !ok {
-		return empty, errors.New("invalid request")
-	}
-
-	fmt.Printf("%s executed", q.Name())
-	return QueryResponse{Data: req.Data}, nil
 }
 
 type NotificationRequest struct {

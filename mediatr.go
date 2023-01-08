@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+
+	"github.com/ahmetb/go-linq/v3"
 )
 
 type Mediatr struct {
@@ -78,6 +80,50 @@ func (m *Mediatr) RegisterPipelineBehaviour(behaviour PipelineBehaviour) error {
 
 	m.pipelineBehaviourRegistry = prepend(m.pipelineBehaviourRegistry, behaviour)
 	return nil
+}
+
+// Send sends the request to its corresponding RequestHandler.
+func (m *Mediatr) Send(ctx context.Context, request any) (any, error) {
+	rt := reflect.TypeOf(request).String()
+
+	handler, ok := m.requestHandlerRegistry[rt]
+	if !ok {
+		return nil, fmt.Errorf("%w: %s", ErrRequestHandlerNotFound, rt)
+	}
+
+	if len(m.pipelineBehaviourRegistry) > 0 {
+		var lastHandler RequestHandlerFunc = func() (any, error) {
+			return handler.Handle(ctx, request)
+		}
+
+		aggregateResult := linq.From(m.pipelineBehaviourRegistry).AggregateWithSeedT(
+			lastHandler,
+			func(next RequestHandlerFunc, pipe PipelineBehaviour) RequestHandlerFunc {
+				pipeValue := pipe
+				nexValue := next
+
+				var handlerFunc RequestHandlerFunc = func() (any, error) {
+					return pipeValue.Handle(ctx, request, nexValue)
+				}
+
+				return handlerFunc
+			})
+
+		v := aggregateResult.(RequestHandlerFunc)
+		response, err := v()
+		if err != nil {
+			return nil, err
+		}
+
+		return response, nil
+	}
+
+	response, err := handler.Handle(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 // existsPipeType checks if a pipeline behaviour exists in the registry.
