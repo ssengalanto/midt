@@ -10,7 +10,8 @@ import (
 )
 
 type Mediatr struct {
-	requestHandlerRegistry map[string]RequestHandler
+	requestHandlerRegistry      map[string]RequestHandler
+	notificationHandlerRegistry map[string]NotificationHandler
 }
 
 type RequestHandler interface {
@@ -18,10 +19,16 @@ type RequestHandler interface {
 	Handle(ctx context.Context, request any) (any, error)
 }
 
+type NotificationHandler interface {
+	Name() string
+	Handle(ctx context.Context, notification any) error
+}
+
 // New creates a new Mediatr instance.
 func New() *Mediatr {
 	return &Mediatr{
-		requestHandlerRegistry: map[string]RequestHandler{},
+		requestHandlerRegistry:      map[string]RequestHandler{},
+		notificationHandlerRegistry: map[string]NotificationHandler{},
 	}
 }
 
@@ -35,5 +42,18 @@ func (m *Mediatr) RegisterRequestHandler(handler RequestHandler) error {
 	}
 
 	m.requestHandlerRegistry[hn] = handler
+	return nil
+}
+
+// RegisterNotificationHandler register a notification handler in the registry.
+func (m *Mediatr) RegisterNotificationHandler(handler NotificationHandler) error {
+	hn := handler.Name()
+
+	_, ok := m.notificationHandlerRegistry[hn]
+	if ok {
+		return fmt.Errorf("%w: %s", ErrNotificationHandlerAlreadyExists, hn)
+	}
+
+	m.notificationHandlerRegistry[hn] = handler
 	return nil
 }

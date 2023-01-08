@@ -16,7 +16,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestMediatr_RegisterRequestHandler(t *testing.T) {
-	t.Run("it should register all handlers successfully", func(t *testing.T) {
+	t.Run("it should register all request handlers successfully", func(t *testing.T) {
 		m := mediatr.New()
 
 		hdlr1 := &CommandHandler{}
@@ -27,7 +27,7 @@ func TestMediatr_RegisterRequestHandler(t *testing.T) {
 		err = m.RegisterRequestHandler(hdlr2)
 		require.NoError(t, err)
 	})
-	t.Run("it should return an error when trying to register an already existing handler", func(t *testing.T) {
+	t.Run("it should return an error when trying to register an already existing request handler", func(t *testing.T) {
 		m := mediatr.New()
 
 		hdlr1 := &CommandHandler{}
@@ -36,6 +36,27 @@ func TestMediatr_RegisterRequestHandler(t *testing.T) {
 
 		hdlr2 := &CommandHandler{}
 		err = m.RegisterRequestHandler(hdlr2)
+		require.Error(t, err)
+	})
+}
+
+func TestMediatr_RegisterNotificationHandler(t *testing.T) {
+	t.Run("it should register the notification handler successfully", func(t *testing.T) {
+		m := mediatr.New()
+
+		hdlr1 := &NotificationHandler{}
+		err := m.RegisterNotificationHandler(hdlr1)
+		require.NoError(t, err)
+	})
+	t.Run("it should return an error when trying to register an already existing notification handler", func(t *testing.T) {
+		m := mediatr.New()
+
+		hdlr1 := &NotificationHandler{}
+		err := m.RegisterNotificationHandler(hdlr1)
+		require.NoError(t, err)
+
+		hdlr2 := &NotificationHandler{}
+		err = m.RegisterNotificationHandler(hdlr2)
 		require.Error(t, err)
 	})
 }

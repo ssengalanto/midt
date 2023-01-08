@@ -57,3 +57,23 @@ func (q *QueryHandler) Handle(ctx context.Context, request any) (any, error) {
 	fmt.Printf("%s executed", q.Name())
 	return QueryResponse{Data: req.Data}, nil
 }
+
+type NotificationRequest struct {
+	Data string
+}
+
+type NotificationHandler struct{}
+
+func (n *NotificationHandler) Name() string {
+	return fmt.Sprintf("%T", &CommandRequest{})
+}
+
+func (n *NotificationHandler) Handle(ctx context.Context, notification any) error {
+	_, ok := notification.(*NotificationRequest)
+	if !ok {
+		return errors.New("invalid notification")
+	}
+
+	fmt.Printf("%s executed", n.Name())
+	return nil
+}

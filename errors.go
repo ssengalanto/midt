@@ -6,4 +6,6 @@ import "fmt"
 var (
 	// ErrRequestHandlerAlreadyExists is returned when a request handler already exists in the registry.
 	ErrRequestHandlerAlreadyExists = fmt.Errorf("request handler already exists")
+	// ErrNotificationHandlerAlreadyExists is returned when a notification handler already exists in the registry.
+	ErrNotificationHandlerAlreadyExists = fmt.Errorf("notification handler already exists")
 )
