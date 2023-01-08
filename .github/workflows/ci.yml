@@ -22,7 +22,12 @@ jobs:
         run: go build -v ./...
 
       - name: test
-        run: go test -v ./...
+        run: go test -v -coverprofile=profile.cov ./...
+
+      - name: send test coverage
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: profile.cov
 
   lint:
     name: lint
