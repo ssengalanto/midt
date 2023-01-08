@@ -8,4 +8,6 @@ var (
 	ErrRequestHandlerAlreadyExists = fmt.Errorf("request handler already exists")
 	// ErrNotificationHandlerAlreadyExists is returned when a notification handler already exists in the registry.
 	ErrNotificationHandlerAlreadyExists = fmt.Errorf("notification handler already exists")
+	// ErrPipelineBehaviourAlreadyExists is returned when a pipeline behaviour already exists in the registry.
+	ErrPipelineBehaviourAlreadyExists = fmt.Errorf("pipeline behaviour already exists")
 )

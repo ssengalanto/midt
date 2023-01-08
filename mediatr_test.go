@@ -44,8 +44,8 @@ func TestMediatr_RegisterNotificationHandler(t *testing.T) {
 	t.Run("it should register the notification handler successfully", func(t *testing.T) {
 		m := mediatr.New()
 
-		hdlr1 := &NotificationHandler{}
-		err := m.RegisterNotificationHandler(hdlr1)
+		hdlr := &NotificationHandler{}
+		err := m.RegisterNotificationHandler(hdlr)
 		require.NoError(t, err)
 	})
 	t.Run("it should return an error when trying to register an already existing notification handler", func(t *testing.T) {
@@ -59,4 +59,26 @@ func TestMediatr_RegisterNotificationHandler(t *testing.T) {
 		err = m.RegisterNotificationHandler(hdlr2)
 		require.Error(t, err)
 	})
+}
+
+func TestMediatr_RegisterPipelineBehaviour(t *testing.T) {
+	t.Run("it should register the pipeline behaviour successfully", func(t *testing.T) {
+		m := mediatr.New()
+
+		pb := &PipelineBehaviourHandler{}
+		err := m.RegisterPipelineBehaviour(pb)
+		require.NoError(t, err)
+	})
+	t.Run("it should return an error when trying to register an already existing pipeline behaviour",
+		func(t *testing.T) {
+			m := mediatr.New()
+
+			pb1 := &PipelineBehaviourHandler{}
+			err := m.RegisterPipelineBehaviour(pb1)
+			require.NoError(t, err)
+
+			pb2 := &PipelineBehaviourHandler{}
+			err = m.RegisterPipelineBehaviour(pb2)
+			require.Error(t, err)
+		})
 }

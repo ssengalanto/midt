@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	mediatr "github.com/ssengalanto/mediatR"
+	"log"
 )
 
 type CommandRequest struct {
@@ -76,4 +78,21 @@ func (n *NotificationHandler) Handle(ctx context.Context, notification any) erro
 
 	fmt.Printf("%s executed", n.Name())
 	return nil
+}
+
+type PipelineBehaviourHandler struct{}
+
+func (p *PipelineBehaviourHandler) Handle(
+	ctx context.Context,
+	request any,
+	next mediatr.RequestHandlerFunc,
+) (any, error) {
+	log.Printf("request: %v", request)
+
+	res, err := next()
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
