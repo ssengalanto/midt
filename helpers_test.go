@@ -1,4 +1,4 @@
-package mediatr_test
+package midt_test
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	mediatr "github.com/ssengalanto/mediatR"
+	"github.com/ssengalanto/midt"
 )
 
 type CommandRequest struct {
@@ -60,7 +60,7 @@ type PipelineBehaviourHandler struct{}
 func (p *PipelineBehaviourHandler) Handle(
 	ctx context.Context,
 	request any,
-	next mediatr.RequestHandlerFunc,
+	next midt.RequestHandlerFunc,
 ) (any, error) {
 	log.Printf("request: %v", request)
 

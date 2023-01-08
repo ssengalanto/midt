@@ -1,31 +1,31 @@
-package mediatr_test
+package midt_test
 
 import (
 	"context"
 	"testing"
 
-	mediatr "github.com/ssengalanto/mediatR"
+	"github.com/ssengalanto/midt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNew(t *testing.T) {
-	t.Run("it should create a new mediatr instance", func(t *testing.T) {
-		m := mediatr.New()
-		assert.NotNil(t, m, "new mediatr instance shouldn't be nil")
+	t.Run("it should create a new midt instance", func(t *testing.T) {
+		m := midt.New()
+		assert.NotNil(t, m, "new midt instance shouldn't be nil")
 	})
 }
 
-func TestMediatr_RegisterRequestHandler(t *testing.T) {
+func TestMidt_RegisterRequestHandler(t *testing.T) {
 	t.Run("it should register all request handlers successfully", func(t *testing.T) {
-		m := mediatr.New()
+		m := midt.New()
 
 		hdlr1 := &CommandHandler{}
 		err := m.RegisterRequestHandler(hdlr1)
 		require.NoError(t, err)
 	})
 	t.Run("it should return an error when trying to register an already existing request handler", func(t *testing.T) {
-		m := mediatr.New()
+		m := midt.New()
 
 		hdlr1 := &CommandHandler{}
 		err := m.RegisterRequestHandler(hdlr1)
@@ -37,16 +37,16 @@ func TestMediatr_RegisterRequestHandler(t *testing.T) {
 	})
 }
 
-func TestMediatr_RegisterNotificationHandler(t *testing.T) {
+func TestMidt_RegisterNotificationHandler(t *testing.T) {
 	t.Run("it should register the notification handler successfully", func(t *testing.T) {
-		m := mediatr.New()
+		m := midt.New()
 
 		hdlr := &NotificationHandler{}
 		err := m.RegisterNotificationHandler(hdlr)
 		require.NoError(t, err)
 	})
 	t.Run("it should return an error when trying to register an already existing notification handler", func(t *testing.T) {
-		m := mediatr.New()
+		m := midt.New()
 
 		hdlr1 := &NotificationHandler{}
 		err := m.RegisterNotificationHandler(hdlr1)
@@ -58,9 +58,9 @@ func TestMediatr_RegisterNotificationHandler(t *testing.T) {
 	})
 }
 
-func TestMediatr_RegisterPipelineBehaviour(t *testing.T) {
+func TestMidt_RegisterPipelineBehaviour(t *testing.T) {
 	t.Run("it should register the pipeline behaviour successfully", func(t *testing.T) {
-		m := mediatr.New()
+		m := midt.New()
 
 		pb := &PipelineBehaviourHandler{}
 		err := m.RegisterPipelineBehaviour(pb)
@@ -68,7 +68,7 @@ func TestMediatr_RegisterPipelineBehaviour(t *testing.T) {
 	})
 	t.Run("it should return an error when trying to register an already existing pipeline behaviour",
 		func(t *testing.T) {
-			m := mediatr.New()
+			m := midt.New()
 
 			pb1 := &PipelineBehaviourHandler{}
 			err := m.RegisterPipelineBehaviour(pb1)
@@ -80,10 +80,10 @@ func TestMediatr_RegisterPipelineBehaviour(t *testing.T) {
 		})
 }
 
-func TestMediatr_Send(t *testing.T) {
+func TestMidt_Send(t *testing.T) {
 	t.Run("it should execute the request handler",
 		func(t *testing.T) {
-			m := mediatr.New()
+			m := midt.New()
 
 			hdlr := &CommandHandler{}
 			err := m.RegisterRequestHandler(hdlr)
@@ -94,7 +94,7 @@ func TestMediatr_Send(t *testing.T) {
 		})
 	t.Run("it should execute the pipeline behaviours",
 		func(t *testing.T) {
-			m := mediatr.New()
+			m := midt.New()
 
 			pb := &PipelineBehaviourHandler{}
 			err := m.RegisterPipelineBehaviour(pb)
@@ -109,17 +109,17 @@ func TestMediatr_Send(t *testing.T) {
 		})
 	t.Run("it should return an error if there are no registered request handlers in the registry",
 		func(t *testing.T) {
-			m := mediatr.New()
+			m := midt.New()
 
 			_, err := m.Send(context.Background(), &CommandRequest{})
 			require.Error(t, err)
 		})
 }
 
-func TestMediatr_Publish(t *testing.T) {
+func TestMidt_Publish(t *testing.T) {
 	t.Run("it should execute the notification handler",
 		func(t *testing.T) {
-			m := mediatr.New()
+			m := midt.New()
 
 			hdlr := &NotificationHandler{}
 			err := m.RegisterNotificationHandler(hdlr)
@@ -130,7 +130,7 @@ func TestMediatr_Publish(t *testing.T) {
 		})
 	t.Run("it should return an error if there are no registered notification handlers in the registry",
 		func(t *testing.T) {
-			m := mediatr.New()
+			m := midt.New()
 
 			err := m.Publish(context.Background(), &NotificationRequest{})
 			require.Error(t, err)

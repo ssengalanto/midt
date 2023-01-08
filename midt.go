@@ -1,8 +1,8 @@
 // Copyright 2023 Ssen Galanto. All rights reserved.
 
-// Package mediatr provides mediator pattern that reduces coupling between components
+// Package midt provides mediator pattern that reduces coupling between components
 // of a program by making them communicate indirectly, through a special mediator object.
-package mediatr
+package midt
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/ahmetb/go-linq/v3"
 )
 
-type Mediatr struct {
+type Midt struct {
 	requestHandlerRegistry      map[string]RequestHandler
 	notificationHandlerRegistry map[string]NotificationHandler
 	pipelineBehaviourRegistry   []PipelineBehaviour
@@ -34,9 +34,9 @@ type PipelineBehaviour interface {
 	Handle(ctx context.Context, request any, next RequestHandlerFunc) (any, error)
 }
 
-// New creates a new Mediatr instance.
-func New() *Mediatr {
-	return &Mediatr{
+// New creates a new Midt instance.
+func New() *Midt {
+	return &Midt{
 		requestHandlerRegistry:      map[string]RequestHandler{},
 		notificationHandlerRegistry: map[string]NotificationHandler{},
 		pipelineBehaviourRegistry:   []PipelineBehaviour{},
@@ -44,7 +44,7 @@ func New() *Mediatr {
 }
 
 // RegisterRequestHandler register a RequestHandler in the registry.
-func (m *Mediatr) RegisterRequestHandler(handler RequestHandler) error {
+func (m *Midt) RegisterRequestHandler(handler RequestHandler) error {
 	hn := handler.Name()
 
 	_, ok := m.requestHandlerRegistry[hn]
@@ -57,7 +57,7 @@ func (m *Mediatr) RegisterRequestHandler(handler RequestHandler) error {
 }
 
 // RegisterNotificationHandler register a NotificationHandler in the registry.
-func (m *Mediatr) RegisterNotificationHandler(handler NotificationHandler) error {
+func (m *Midt) RegisterNotificationHandler(handler NotificationHandler) error {
 	hn := handler.Name()
 
 	_, ok := m.notificationHandlerRegistry[hn]
@@ -70,7 +70,7 @@ func (m *Mediatr) RegisterNotificationHandler(handler NotificationHandler) error
 }
 
 // RegisterPipelineBehaviour register a PipelineBehaviour in the registry.
-func (m *Mediatr) RegisterPipelineBehaviour(behaviour PipelineBehaviour) error {
+func (m *Midt) RegisterPipelineBehaviour(behaviour PipelineBehaviour) error {
 	bt := reflect.TypeOf(behaviour)
 
 	exists := m.existsPipeType(bt)
@@ -83,7 +83,7 @@ func (m *Mediatr) RegisterPipelineBehaviour(behaviour PipelineBehaviour) error {
 }
 
 // Send sends the request to its corresponding RequestHandler.
-func (m *Mediatr) Send(ctx context.Context, request any) (any, error) {
+func (m *Midt) Send(ctx context.Context, request any) (any, error) {
 	rt := reflect.TypeOf(request).String()
 
 	handler, ok := m.requestHandlerRegistry[rt]
@@ -127,7 +127,7 @@ func (m *Mediatr) Send(ctx context.Context, request any) (any, error) {
 }
 
 // Publish publishes the notification event to its corresponding NotificationHandler.
-func (m *Mediatr) Publish(ctx context.Context, request any) error {
+func (m *Midt) Publish(ctx context.Context, request any) error {
 	rt := reflect.TypeOf(request).String()
 
 	handler, ok := m.notificationHandlerRegistry[rt]
@@ -144,7 +144,7 @@ func (m *Mediatr) Publish(ctx context.Context, request any) error {
 }
 
 // existsPipeType checks if a pipeline behaviour exists in the registry.
-func (m *Mediatr) existsPipeType(p reflect.Type) bool {
+func (m *Midt) existsPipeType(p reflect.Type) bool {
 	for _, pipe := range m.pipelineBehaviourRegistry {
 		if reflect.TypeOf(pipe) == p {
 			return true

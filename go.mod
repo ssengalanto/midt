@@ -1,4 +1,4 @@
-module github.com/ssengalanto/mediatR
+module github.com/ssengalanto/midt
 
 go 1.19
 
