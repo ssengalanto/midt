@@ -20,8 +20,8 @@ func TestMidt_RegisterRequestHandler(t *testing.T) {
 	t.Run("it should register all request handlers successfully", func(t *testing.T) {
 		m := midt.New()
 
-		hdlr1 := &CommandHandler{}
-		err := m.RegisterRequestHandler(hdlr1)
+		hdlr := &CommandHandler{}
+		err := m.RegisterRequestHandler(hdlr)
 		require.NoError(t, err)
 	})
 	t.Run("it should return an error when trying to register an already existing request handler", func(t *testing.T) {
