@@ -1,7 +1,7 @@
 // Copyright 2023 Ssen Galanto. All rights reserved.
 
 // Package midt provides mediator pattern that reduces coupling between components
-// of a program by making them communicate indirectly, through a special mediator object.
+// of a program by making them communicate indirectly, through a special mediator struct.
 package midt
 
 import (
@@ -12,10 +12,12 @@ import (
 	"github.com/ahmetb/go-linq/v3"
 )
 
-type Midt struct {
-	requestHandlerRegistry      map[string]RequestHandler
-	notificationHandlerRegistry map[string]NotificationHandler
-	pipelineBehaviourRegistry   []PipelineBehaviour
+type Mediator interface {
+	RegisterRequestHandler(handler RequestHandler) error
+	RegisterNotificationHandler(handler NotificationHandler) error
+	RegisterPipelineBehaviour(behaviour PipelineBehaviour) error
+	Send(ctx context.Context, request any) (any, error)
+	Publish(ctx context.Context, request any) error
 }
 
 type RequestHandler interface {
@@ -28,10 +30,16 @@ type NotificationHandler interface {
 	Handle(ctx context.Context, notification any) error
 }
 
-type RequestHandlerFunc func() (any, error)
-
 type PipelineBehaviour interface {
 	Handle(ctx context.Context, request any, next RequestHandlerFunc) (any, error)
+}
+
+type RequestHandlerFunc func() (any, error)
+
+type Midt struct {
+	requestHandlerRegistry      map[string]RequestHandler
+	notificationHandlerRegistry map[string]NotificationHandler
+	pipelineBehaviourRegistry   []PipelineBehaviour
 }
 
 // New creates a new Midt instance.
