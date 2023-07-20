@@ -8,17 +8,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-
-	"github.com/ahmetb/go-linq/v3"
 )
-
-type Mediator interface {
-	RegisterRequestHandler(handler RequestHandler) error
-	RegisterNotificationHandler(handler NotificationHandler) error
-	RegisterPipelineBehaviour(behaviour PipelineBehaviour) error
-	Send(ctx context.Context, request any) (any, error)
-	Publish(ctx context.Context, request any) error
-}
 
 type RequestHandler interface {
 	Name() string
@@ -86,7 +76,7 @@ func (m *Midt) RegisterPipelineBehaviour(behaviour PipelineBehaviour) error {
 		return fmt.Errorf("%w: %s", ErrPipelineBehaviourAlreadyExists, bt)
 	}
 
-	m.pipelineBehaviourRegistry = prepend(m.pipelineBehaviourRegistry, behaviour)
+	m.pipelineBehaviourRegistry = append(m.pipelineBehaviourRegistry, behaviour)
 	return nil
 }
 
@@ -104,21 +94,17 @@ func (m *Midt) Send(ctx context.Context, request any) (any, error) {
 			return handler.Handle(ctx, request)
 		}
 
-		aggregateResult := linq.From(m.pipelineBehaviourRegistry).AggregateWithSeedT(
-			lastHandler,
-			func(next RequestHandlerFunc, pipe PipelineBehaviour) RequestHandlerFunc {
-				pipeValue := pipe
-				nexValue := next
+		var aggregateResult = lastHandler
+		for _, pipe := range m.pipelineBehaviourRegistry {
+			pipeValue := pipe
+			nextValue := aggregateResult
 
-				var handlerFunc RequestHandlerFunc = func() (any, error) {
-					return pipeValue.Handle(ctx, request, nexValue)
-				}
+			aggregateResult = func() (any, error) {
+				return pipeValue.Handle(ctx, request, nextValue)
+			}
+		}
 
-				return handlerFunc
-			})
-
-		v := aggregateResult.(RequestHandlerFunc)
-		response, err := v()
+		response, err := aggregateResult()
 		if err != nil {
 			return nil, err
 		}
@@ -159,10 +145,4 @@ func (m *Midt) existsPipeType(p reflect.Type) bool {
 		}
 	}
 	return false
-}
-
-// prepend an element in the slice.
-func prepend[T any](x []T, y T) []T {
-	x = append([]T{y}, x...)
-	return x
 }
